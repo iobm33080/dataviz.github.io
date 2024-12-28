@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel & CSV File Reader</title>
+    <title>Excel & CSV File Reader with Visualizations</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Upload Your Excel or CSV File</h1>
-            <p>Choose a file and preview the data in a structured format.</p>
+            <p>Choose a file, select the columns to visualize, and see the results!</p>
         </header>
 
         <div class="upload-section">
@@ -21,9 +22,15 @@
             <button onclick="handleFile()" class="upload-btn">Read File</button>
         </div>
 
-        <div class="output-section">
-            <h2>Data Preview:</h2>
-            <pre id="output"></pre>
+        <div class="visualization-section">
+            <h2>Select Attributes to Visualize:</h2>
+            <div id="attributes"></div>
+            <button onclick="generateChart()" class="upload-btn">Generate Visualization</button>
+        </div>
+
+        <div class="chart-section">
+            <h2>Visualization:</h2>
+            <canvas id="myChart"></canvas>
         </div>
 
         <footer>
