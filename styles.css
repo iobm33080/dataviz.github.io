@@ -1,0 +1,72 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin-top: 50px;
+}
+
+/* Header Section */
+header h1 {
+    font-size: 2.5rem;
+    color: #007bff;
+}
+
+header p {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+/* File Upload Section */
+#upload-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#upload-form input[type="file"] {
+    font-size: 1rem;
+}
+
+#upload-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2rem;
+}
+
+/* Visualization Section */
+#visualization-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#chart-container {
+    margin-top: 20px;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    #upload-form button {
+        font-size: 1rem;
+    }
+}
