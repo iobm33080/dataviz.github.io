@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your custom CSS file -->
+</head>
+<body>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header Section -->
+        <header class="text-center my-4">
+            <h1>Upload Your Data for Visualization</h1>
+            <p>Upload a CSV or Excel file to generate visualizations.</p>
+        </header>
+
+        <!-- File Upload Section -->
+        <section id="upload-section" class="my-4">
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input type="file" id="file-input" class="form-control" accept=".csv, .xlsx" />
+                </div>
+                <button type="submit" class="btn btn-primary">Upload File</button>
+            </form>
+        </section>
+
+        <!-- Visualization Section -->
+        <section id="visualization-section" class="my-4">
+            <h2>Generated Visualizations</h2>
+            <!-- Placeholder for charts or other visualizations -->
+            <div id="chart-container">
+                <canvas id="chart" width="400" height="200"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script> <!-- Link to your custom JavaScript file -->
+</body>
+</html>
