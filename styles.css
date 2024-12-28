@@ -61,19 +61,14 @@ header p {
     background-color: #2980b9;
 }
 
-.output-section {
-    background-color: #ecf0f1;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+.visualization-section {
+    margin-top: 30px;
+    text-align: center;
 }
 
-output-section pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-size: 1rem;
-    color: #2c3e50;
-    margin: 0;
+.chart-section {
+    margin-top: 50px;
+    text-align: center;
 }
 
 footer {
