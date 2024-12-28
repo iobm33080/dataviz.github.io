@@ -4,16 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel & CSV File Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
-    <h1>Upload Excel or CSV File</h1>
-    <input type="file" id="file-input" />
-    <button onclick="handleFile()">Read File</button>
+    <div class="container">
+        <header>
+            <h1>Upload Your Excel or CSV File</h1>
+            <p>Choose a file and preview the data in a structured format.</p>
+        </header>
 
-    <h2>Data Preview:</h2>
-    <pre id="output"></pre>
+        <div class="upload-section">
+            <input type="file" id="file-input" class="file-input" accept=".xlsx,.xls,.csv" />
+            <button onclick="handleFile()" class="upload-btn">Read File</button>
+        </div>
+
+        <div class="output-section">
+            <h2>Data Preview:</h2>
+            <pre id="output"></pre>
+        </div>
+
+        <footer>
+            <p>Made with ❤️ by Your Name</p>
+        </footer>
+    </div>
 
     <script src="script.js"></script>
 </body>
