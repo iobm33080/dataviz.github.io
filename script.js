@@ -1,151 +1,134 @@
-let jsonData = [];
+// Handle file input and parse the file data (Excel or CSV)
+let data = null;  // Store the loaded data
 
-// Handle the file upload and parsing
+// Function to handle file input and parse it
 function handleFile() {
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
 
     if (!file) {
-        alert("Please upload a file.");
+        alert('Please upload a file!');
         return;
     }
 
-    const fileType = file.type;
-
-    // Check if the file is an Excel file
-    if (fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || 
-        fileType === "application/vnd.ms-excel" || 
-        fileType === "application/vnd.ms-office") {
-        // Read Excel file (xlsx, xls)
-        readExcel(file);
-    } 
-    // Check if the file is a CSV file
-    else if (fileType === "text/csv") {
-        // Read CSV file
-        readCSV(file);
-    } 
-    else {
-        alert("Please upload a valid Excel or CSV file.");
-    }
-}
-
-// Function to read Excel file
-function readExcel(file) {
     const reader = new FileReader();
 
-    reader.onload = function(e) {
-        const data = e.target.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
+    // Determine if the file is an Excel or CSV file
+    const fileExtension = file.name.split('.').pop().toLowerCase();
 
-        // Get the first sheet
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
+    reader.onload = function(event) {
+        const fileData = event.target.result;
 
-        // Convert the sheet to JSON format
-        jsonData = XLSX.utils.sheet_to_json(sheet);
-        console.log("Excel Data:", jsonData);
-
-        // Display the available columns for visualization
-        displayAttributes(jsonData);
+        if (fileExtension === 'csv') {
+            // Parse CSV file using PapaParse
+            Papa.parse(fileData, {
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    data = results.data;
+                    displayColumns();
+                }
+            });
+        } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+            // Parse Excel file using XLSX library
+            const workbook = XLSX.read(fileData, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            data = XLSX.utils.sheet_to_json(sheet, { header: 1 }); // Convert to 2D array
+            displayColumns();
+        } else {
+            alert('Unsupported file format. Please upload a CSV or Excel file.');
+        }
     };
 
     reader.readAsBinaryString(file);
 }
 
-// Function to read CSV file
-function readCSV(file) {
-    const reader = new FileReader();
+// Display available columns to choose from for visualization
+function displayColumns() {
+    if (!data) return;
 
-    reader.onload = function(e) {
-        const data = e.target.result;
+    const columnsDiv = document.getElementById('attributes');
+    columnsDiv.innerHTML = '';  // Clear existing columns
 
-        // Parse CSV data using PapaParse
-        const parsedData = Papa.parse(data, {
-            header: true,  // Use the first row as column names
-            skipEmptyLines: true
-        });
+    // Get the header (first row) for column names (assuming data is in a tabular format)
+    const headers = data[0];
 
-        jsonData = parsedData.data;
-        console.log("CSV Data:", jsonData);
+    const columnSelect1 = document.createElement('select');
+    const columnSelect2 = document.createElement('select');
+    columnSelect1.id = 'column-select-1';
+    columnSelect2.id = 'column-select-2';
 
-        // Display the available columns for visualization
-        displayAttributes(jsonData);
-    };
+    // Populate the dropdown options with the column names
+    headers.forEach((header, index) => {
+        const option1 = document.createElement('option');
+        option1.value = index;
+        option1.innerText = header;
+        columnSelect1.appendChild(option1);
 
-    reader.readAsText(file);
-}
-
-// Display the available columns (attributes) for visualization
-function displayAttributes(data) {
-    const attributesDiv = document.getElementById('attributes');
-    attributesDiv.innerHTML = '';
-
-    const columns = Object.keys(data[0]);
-    columns.forEach(col => {
-        const label = document.createElement('label');
-        label.innerText = col;
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = col;
-        checkbox.value = col;
-
-        const div = document.createElement('div');
-        div.appendChild(label);
-        div.appendChild(checkbox);
-        attributesDiv.appendChild(div);
+        const option2 = document.createElement('option');
+        option2.value = index;
+        option2.innerText = header;
+        columnSelect2.appendChild(option2);
     });
+
+    columnsDiv.appendChild(document.createTextNode('Select X-Axis Column: '));
+    columnsDiv.appendChild(columnSelect1);
+    columnsDiv.appendChild(document.createElement('br'));
+
+    columnsDiv.appendChild(document.createTextNode('Select Y-Axis Column: '));
+    columnsDiv.appendChild(columnSelect2);
+
+    // Create chart type selection dropdown
+    const chartTypeSelect = document.createElement('select');
+    chartTypeSelect.id = 'chart-type';
+    const chartTypes = ['Bar', 'Line', 'Pie'];
+    chartTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type.toLowerCase();
+        option.innerText = type;
+        chartTypeSelect.appendChild(option);
+    });
+    columnsDiv.appendChild(document.createElement('br'));
+    columnsDiv.appendChild(document.createTextNode('Select Chart Type: '));
+    columnsDiv.appendChild(chartTypeSelect);
 }
 
-// Generate the chart based on selected attributes
+// Generate chart based on user-selected columns and chart type
 function generateChart() {
-    const selectedColumns = [];
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    if (!data) return;
 
-    checkboxes.forEach(checkbox => {
-        selectedColumns.push(checkbox.value);
-    });
+    const xAxisColumn = document.getElementById('column-select-1').value;
+    const yAxisColumn = document.getElementById('column-select-2').value;
+    const chartType = document.getElementById('chart-type').value;
 
-    if (selectedColumns.length < 2) {
-        alert("Please select at least two columns to visualize.");
-        return;
-    }
+    const labels = data.slice(1).map(row => row[xAxisColumn]);
+    const values = data.slice(1).map(row => row[yAxisColumn]);
 
-    const labels = jsonData.map(item => item[selectedColumns[0]]);
-    const dataValues = jsonData.map(item => item[selectedColumns[1]]);
-
-    const ctx = document.getElementById('myChart').getContext('2d');
     const chartData = {
         labels: labels,
         datasets: [{
-            label: `${selectedColumns[0]} vs ${selectedColumns[1]}`,
-            data: dataValues,
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderWidth: 1
+            label: 'Data Visualization',
+            data: values,
+            backgroundColor: chartType === 'pie' ? 'rgba(75, 192, 192, 0.6)' : 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
         }]
     };
 
-    const config = {
-        type: 'line',  // Change this to 'bar' or 'pie' for different types of charts
+    const chartConfig = {
+        type: chartType,  // Bar, Line, Pie
         data: chartData,
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return `${selectedColumns[0]}: ${tooltipItem.label}, ${selectedColumns[1]}: ${tooltipItem.raw}`;
-                        }
-                    }
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
         }
     };
 
-    // Create the chart
-    new Chart(ctx, config);
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, chartConfig);
 }
