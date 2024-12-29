@@ -1,7 +1,7 @@
-// Handle file input and parse the file data (Excel or CSV)
 let data = null;  // Store the loaded data
+let chart = null; // Store the chart instance
 
-// Function to handle file input and parse it
+// Handle file input and parse the file data (Excel or CSV)
 function handleFile() {
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
@@ -12,8 +12,6 @@ function handleFile() {
     }
 
     const reader = new FileReader();
-
-    // Determine if the file is an Excel or CSV file
     const fileExtension = file.name.split('.').pop().toLowerCase();
 
     reader.onload = function(event) {
@@ -34,7 +32,7 @@ function handleFile() {
             const workbook = XLSX.read(fileData, { type: 'binary' });
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
-            data = XLSX.utils.sheet_to_json(sheet, { header: 1 }); // Convert to 2D array
+            data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
             displayColumns();
         } else {
             alert('Unsupported file format. Please upload a CSV or Excel file.');
@@ -51,7 +49,6 @@ function displayColumns() {
     const columnsDiv = document.getElementById('attributes');
     columnsDiv.innerHTML = '';  // Clear existing columns
 
-    // Get the header (first row) for column names (assuming data is in a tabular format)
     const headers = data[0];
 
     const columnSelect1 = document.createElement('select');
@@ -59,7 +56,6 @@ function displayColumns() {
     columnSelect1.id = 'column-select-1';
     columnSelect2.id = 'column-select-2';
 
-    // Populate the dropdown options with the column names
     headers.forEach((header, index) => {
         const option1 = document.createElement('option');
         option1.value = index;
@@ -72,63 +68,79 @@ function displayColumns() {
         columnSelect2.appendChild(option2);
     });
 
-    columnsDiv.appendChild(document.createTextNode('Select X-Axis Column: '));
     columnsDiv.appendChild(columnSelect1);
-    columnsDiv.appendChild(document.createElement('br'));
-
-    columnsDiv.appendChild(document.createTextNode('Select Y-Axis Column: '));
     columnsDiv.appendChild(columnSelect2);
-
-    // Create chart type selection dropdown
-    const chartTypeSelect = document.createElement('select');
-    chartTypeSelect.id = 'chart-type';
-    const chartTypes = ['Bar', 'Line', 'Pie'];
-    chartTypes.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type.toLowerCase();
-        option.innerText = type;
-        chartTypeSelect.appendChild(option);
-    });
-    columnsDiv.appendChild(document.createElement('br'));
-    columnsDiv.appendChild(document.createTextNode('Select Chart Type: '));
-    columnsDiv.appendChild(chartTypeSelect);
 }
 
-// Generate chart based on user-selected columns and chart type
+// Generate the chart based on selected columns
 function generateChart() {
-    if (!data) return;
+    const columnSelect1 = document.getElementById('column-select-1');
+    const columnSelect2 = document.getElementById('column-select-2');
+    const xColumnIndex = columnSelect1.value;
+    const yColumnIndex = columnSelect2.value;
 
-    const xAxisColumn = document.getElementById('column-select-1').value;
-    const yAxisColumn = document.getElementById('column-select-2').value;
-    const chartType = document.getElementById('chart-type').value;
+    if (data.length < 2 || xColumnIndex == null || yColumnIndex == null) {
+        alert('Please select valid columns.');
+        return;
+    }
 
-    const labels = data.slice(1).map(row => row[xAxisColumn]);
-    const values = data.slice(1).map(row => row[yAxisColumn]);
+    const xValues = data.slice(1).map(row => row[xColumnIndex]);
+    const yValues = data.slice(1).map(row => row[yColumnIndex]);
+
+    const chartType = 'line';  // Default to line chart, can be extended for multiple chart types
+
+    const barColor = document.getElementById('bar-color').value;
+    const lineColor = document.getElementById('line-color').value;
 
     const chartData = {
-        labels: labels,
+        labels: xValues,
         datasets: [{
             label: 'Data Visualization',
-            data: values,
-            backgroundColor: chartType === 'pie' ? 'rgba(75, 192, 192, 0.6)' : 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
+            data: yValues,
+            backgroundColor: chartType === 'bar' ? barColor : 'transparent',
+            borderColor: chartType === 'line' ? lineColor : barColor,
+            borderWidth: 2,
+            fill: chartType === 'line' ? false : true,
         }]
     };
 
-    const chartConfig = {
-        type: chartType,  // Bar, Line, Pie
-        data: chartData,
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+    const chartOptions = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
             }
         }
     };
 
-    const ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, chartConfig);
+    if (chart) {
+        chart.destroy();  // Destroy previous chart if exists
+    }
+
+    chart = new Chart(document.getElementById('myChart'), {
+        type: chartType,
+        data: chartData,
+        options: chartOptions
+    });
+
+    // Enable export functionality
+    enableExport();
+}
+
+// Enable exporting chart as PNG
+function enableExport() {
+    document.getElementById('download-btn').addEventListener('click', function() {
+        const chartImage = chart.toBase64Image();
+        const link = document.createElement('a');
+        link.href = chartImage;
+        link.download = 'chart.png';
+        link.click();
+    });
+}
+
+// Toggle between Dark and Light mode
+function toggleMode() {
+    document.body.classList.toggle('light-mode');
+    document.querySelector('header').classList.toggle('light-mode');
+    document.querySelector('footer').classList.toggle('light-mode');
 }
