@@ -13,6 +13,11 @@ body {
     height: 100vh;
 }
 
+body.light-mode {
+    background-color: #f4f4f4;
+    color: #000;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -28,7 +33,12 @@ header {
     align-items: center;
 }
 
-.header .logo {
+header.light-mode {
+    background-color: #fff;
+    color: #333;
+}
+
+header .logo {
     font-size: 24px;
     font-weight: 500;
 }
@@ -60,7 +70,6 @@ header {
     padding-left: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
 }
 
 .side-nav .nav-item {
@@ -128,9 +137,21 @@ footer {
     color: #bbb;
     text-align: center;
     padding: 10px;
-    margin-top: 20px;
 }
 
 footer p {
     font-size: 14px;
+}
+
+.light-mode footer {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+button.upload-btn {
+    margin-top: 10px;
+}
+
+input[type="color"] {
+    margin-top: 5px;
 }
