@@ -12,28 +12,42 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Upload Your Excel or CSV File</h1>
-            <p>Choose a file, select the columns to visualize, and see the results!</p>
+        <header class="header">
+            <div class="logo">DataViz</div>
+            <div class="header-options">
+                <button class="option-btn">File</button>
+                <button class="option-btn">Settings</button>
+            </div>
         </header>
 
-        <div class="upload-section">
-            <input type="file" id="file-input" class="file-input" accept=".xlsx,.xls,.csv" />
-            <button onclick="handleFile()" class="upload-btn">Read File</button>
+        <div class="main-content">
+            <aside class="side-nav">
+                <div class="nav-item">Home</div>
+                <div class="nav-item">Upload File</div>
+                <div class="nav-item">Visualize</div>
+                <div class="nav-item">Settings</div>
+            </aside>
+
+            <div class="content">
+                <section class="upload-section">
+                    <input type="file" id="file-input" class="file-input" accept=".xlsx,.xls,.csv" />
+                    <button onclick="handleFile()" class="upload-btn">Read File</button>
+                </section>
+
+                <section class="visualization-section">
+                    <h2>Select Attributes to Visualize:</h2>
+                    <div id="attributes"></div>
+                    <button onclick="generateChart()" class="upload-btn">Generate Visualization</button>
+                </section>
+
+                <section class="chart-section">
+                    <h2>Visualization:</h2>
+                    <canvas id="myChart"></canvas>
+                </section>
+            </div>
         </div>
 
-        <div class="visualization-section">
-            <h2>Select Attributes to Visualize:</h2>
-            <div id="attributes"></div>
-            <button onclick="generateChart()" class="upload-btn">Generate Visualization</button>
-        </div>
-
-        <div class="chart-section">
-            <h2>Visualization:</h2>
-            <canvas id="myChart"></canvas>
-        </div>
-
-        <footer>
+        <footer class="footer">
             <p>Made with ❤️ by Your Name</p>
         </footer>
     </div>
